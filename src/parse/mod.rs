@@ -1,6 +1,7 @@
 use crate::lexer;
 mod definition;
 mod block;
+mod if_expr;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ParseError {

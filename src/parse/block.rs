@@ -56,7 +56,7 @@ impl Parse for Block {
 }
 
 #[cfg(test)]
-mod test {
+mod test_block {
     use super::*;
 
     #[test]

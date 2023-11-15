@@ -67,7 +67,7 @@ impl Parse for Definition {
 }
 
 #[cfg(test)]
-mod test {
+mod test_definition {
     use crate::{lexer, parse::Parse};
     use super::{Definition, Expression};
 
