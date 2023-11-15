@@ -1,0 +1,10 @@
+// This is an example of an add function in TrekLang
+
+let add (a b) = => {
+    a + b
+}
+
+let main = => {
+    let value = add(a, b)
+    print add(1, 2)
+}
