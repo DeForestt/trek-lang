@@ -20,7 +20,7 @@ let:
     'let' identifier '=' expression
 
 lambda:
-    (identifier | '('identifier+')')'=>' expression
+    '('identifier*')''=>' expression
 
 function_call:
     identifier '('(expression (, expression)*)?')'

@@ -2,6 +2,7 @@ use crate::lexer;
 mod definition;
 mod block;
 mod if_expr;
+mod lambda;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ParseError {
@@ -31,6 +32,9 @@ pub enum Expression {
     Definition(definition::Definition),
     Number(i32),
     Block(block::Block),
+    Lambda(lambda::Lambda),
+    IfExpr(if_expr::IfExpr),
+    Identifier(String),
 }
 
 impl Expression {
@@ -59,6 +63,9 @@ impl Expression {
                             "{" => {
                                 return Ok(Expression::Block(block::Block::parse(tokens)?));
                             }
+                            "(" => {
+                                return Ok(Expression::Lambda(lambda::Lambda::parse(tokens)?));
+                            }
                             _ => {
                                 return Err(ParseError::new("Unknown Operator", token.line, token.column));
                             }
@@ -69,8 +76,11 @@ impl Expression {
                             "let" => {
                                 return Ok(Expression::Definition(definition::Definition::parse(tokens)?));
                             }
+                            "if" => {
+                                return Ok(Expression::IfExpr(if_expr::IfExpr::parse(tokens)?));
+                            }
                             _ => {
-                                return Err(ParseError::new("Unknown KW", token.line, token.column));
+                                return Ok(Expression::Identifier(token.value.clone()));
                             }
                         }
                     }

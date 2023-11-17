@@ -4,14 +4,14 @@ use crate::lexer;
 use super::{Expression, Parse, ParseError};
 
 #[derive(Debug, Clone, PartialEq)]
-struct IfExpr {
-    condition: Expression,
-    then_expression: Expression,
-    else_expression: Option<Expression>,
+pub struct IfExpr {
+    condition: Box<Expression>,
+    then_expression: Box<Expression>,
+    else_expression: Box<Option<Expression>>
 }
 
 impl IfExpr {
-    fn new(condition: Expression, then_expression: Expression, else_expression: Option<Expression>) -> Self {
+    fn new(condition: Box<Expression>, then_expression: Box<Expression>, else_expression: Box<Option<Expression>>) -> Self {
         IfExpr {
             condition,
             then_expression,
@@ -49,7 +49,7 @@ impl Parse for IfExpr {
             }
             None => None,
         };
-        Ok(IfExpr::new(condition, then_expression, else_expression))
+        Ok(IfExpr::new(Box::new(condition), Box::new(then_expression), Box::new(else_expression)))
     }
 }
 
@@ -95,9 +95,9 @@ mod test_if_expr {
         let result = IfExpr::parse(&mut tokens);
         assert_eq!(result.is_ok(), true);
         assert_eq!(result.unwrap(), IfExpr::new(
-            Expression::Number(1),
-            Expression::Number(2),
-            None,
+            Box::new(Expression::Number(1)),
+            Box::new(Expression::Number(2)),
+            Box::new(None),
         ));
     }
 }
