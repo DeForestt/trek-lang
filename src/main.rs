@@ -1,7 +1,8 @@
 mod lexer;
 mod parse;
+
 fn main() {
-    let tokens = match lexer::tokenize("let add = (a b) => a".to_string()) {
+    let tokens = match lexer::tokenize("let add = (a b) => print(\'Hello World\')".to_string()) {
         Ok(tokens) => tokens,
         Err(e) => {
             println!("{:?}", e);
@@ -9,13 +10,13 @@ fn main() {
         }
     };
 
-    let expression = match parse::Expression::parse(&mut tokens.clone()) {
-        Ok(expression) => expression,
+    let module = parse::parse_module(&mut tokens.clone());
+    match module {
+        Ok(module) => {
+            println!("{:?}", module);
+        }
         Err(e) => {
             println!("{:?}", e);
-            return;
         }
-    };
-
-    println!("{:?}", expression);
+    }
 }

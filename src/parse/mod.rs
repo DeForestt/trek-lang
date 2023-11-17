@@ -4,6 +4,11 @@ mod block;
 mod if_expr;
 mod lambda;
 mod function_call;
+pub mod module;
+
+pub fn parse_module(tokens: &mut Vec<lexer::Token>) -> Result<module::Module, ParseError> {
+    module::Module::parse(tokens)
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ParseError {
@@ -37,6 +42,7 @@ pub enum Expression {
     IfExpr(if_expr::IfExpr),
     Identifier(String),
     FunctionCall(function_call::FunctionCall),
+    StringLiteral(String),
 }
 
 impl Expression {
@@ -82,10 +88,15 @@ impl Expression {
                                 return Ok(Expression::IfExpr(if_expr::IfExpr::parse(tokens)?));
                             }
                             _ => {
-                                // match the token after the symbol
-                                
                                 if tokens.len() < 2 {
-                                    return Ok(Expression::Identifier(token.value.clone()));
+                                    match tokens.pop() {
+                                        Some(token) => {
+                                            return Ok(Expression::Identifier(token.value.clone()));
+                                        }
+                                        None => {
+                                            return Err(ParseError::new("Unknown Parser Error", 0, 0));
+                                        }
+                                    }
                                 }
 
                                 match tokens[tokens.len() - 2].kind {
@@ -113,8 +124,19 @@ impl Expression {
                             }
                         }
                     }
+                    lexer::TokenKind::StringLiteral => {
+                        let value = match tokens.pop() {
+                            Some(token) => {
+                                token.value
+                            }
+                            None => {
+                                return Err(ParseError::new("Expected string literal", 0, 0));
+                            }
+                        };
+                        return Ok(Expression::StringLiteral(value));
+                    }
                     _ => {
-                        return Err(ParseError::new("Expected number or 'let' keyword", token.line, token.column));
+                        return Err(ParseError::new("Unknown Token", token.line, token.column));
                     }
                 }
             }

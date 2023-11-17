@@ -1,4 +1,4 @@
-program: expression+
+module: expression+
 
 expression:
     block |
