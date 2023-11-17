@@ -61,7 +61,7 @@ pub fn tokenize(input: string::String) -> Result<Vec<Token>, LexerError> {
                 }
                 tokens.push(Token::new(TokenKind::Number, value, column, line));
             }
-            '+' | '-' | '*' | '/' | '{' | '}'=> {
+            '+' | '-' | '*' | '/' | '{' | '}' | '(' | ')' => {
                 tokens.push(Token::new(TokenKind::Operator, c.to_string(), column, line));
                 chars.next();
             },
@@ -155,5 +155,5 @@ pub fn tokenize(input: string::String) -> Result<Vec<Token>, LexerError> {
         }
     }
 
-    Ok(tokens)
+    Ok(tokens.into_iter().filter(|t| t.kind != TokenKind::NewLine).rev().collect())
 }

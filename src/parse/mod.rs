@@ -3,6 +3,7 @@ mod definition;
 mod block;
 mod if_expr;
 mod lambda;
+mod function_call;
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ParseError {
@@ -35,6 +36,7 @@ pub enum Expression {
     Lambda(lambda::Lambda),
     IfExpr(if_expr::IfExpr),
     Identifier(String),
+    FunctionCall(function_call::FunctionCall),
 }
 
 impl Expression {
@@ -80,7 +82,34 @@ impl Expression {
                                 return Ok(Expression::IfExpr(if_expr::IfExpr::parse(tokens)?));
                             }
                             _ => {
-                                return Ok(Expression::Identifier(token.value.clone()));
+                                // match the token after the symbol
+                                
+                                if tokens.len() < 2 {
+                                    return Ok(Expression::Identifier(token.value.clone()));
+                                }
+
+                                match tokens[tokens.len() - 2].kind {
+                                    lexer::TokenKind::Operator => {
+                                        match tokens[tokens.len() - 2].value.as_str() {
+                                            "(" => {
+                                                return Ok(Expression::FunctionCall(function_call::FunctionCall::parse(tokens)?));
+                                            }
+                                            _ => {
+                                                match tokens.pop() {
+                                                    Some(token) => {
+                                                        return Ok(Expression::Identifier(token.value.clone()));
+                                                    }
+                                                    None => {
+                                                        return Err(ParseError::new("Unknown Parser Error", 0, 0));
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    _ => {
+                                        return Ok(Expression::Identifier(token.value.clone()));
+                                    }
+                                }
                             }
                         }
                     }
